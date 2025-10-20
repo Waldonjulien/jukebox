@@ -17,20 +17,22 @@ router
   .post(async (req, res) => {
     if (!req.body) return res.status(400).send("Request body is required.");
     const { name, duration } = req.body;
+
     if (!name || !duration)
       return res.status(400).send("Request body requires: name, duration");
-    const track = await createTracts(name, duration);
+
+    const track = await getTracks(name, duration);
     res.status(201).send(track);
   });
 
 router.param("id", async (req, res, next, id) => {
   try {
-    const numericId = parseInt(id);
-    if (isNaN(numericId) || !Number.isInteger(numericId) || numericId <= 0) {
-      return res.status(400).json({ error: "ID must be a positive integer" });
+    const track_Id = parseInt(id);
+    if (isNaN(track_Id)) {
+      return res.status(400).send("ID must be a positive integer");
     }
 
-    const track = await getTrackById(numericId);
+    const track = await getTrackById(id);
     if (track) {
       req.track = track;
       next();
@@ -47,7 +49,7 @@ router
   .route("/:id")
   .get((req, res) => {
     if (!req.track) {
-      return res.status(404).json({ error: "Track not found" });
+      return res.status(404).send("Track not found");
     }
     res.send(req.track);
   })

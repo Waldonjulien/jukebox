@@ -30,18 +30,18 @@ export async function getPlaylistById(id) {
 }
 export async function getTracksFromPlaylist(playlistId) {
   const sql = `
-    SELECT t.* 
-    FROM tracks t
-    JOIN playlist_tracks pt ON t.id = pt.track_id
-    JOIN playlists p ON pt.playlist_id = p.id
-    WHERE p.id = $1`;
+    SELECT tracks.* 
+    FROM tracks
+    JOIN playlist_tracks ON tracks.id = playlist_tracks.track_id
+    JOIN playlists ON playlist_tracks.playlist_id = playlists.id
+    WHERE playlists.id = $1`;
   const { rows: tracks } = await db.query(sql, [playlistId]);
   return tracks;
 }
 
 export async function isTrackInPlaylist(playlistId, trackId) {
   const sql = `
-    SELECT COUNT(*) as count
+    SELECT COUNT(*) 
     FROM playlist_tracks 
     WHERE playlist_id = $1 AND track_id = $2`;
   const {
